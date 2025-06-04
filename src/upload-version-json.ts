@@ -102,10 +102,16 @@ export async function uploadVersionJSON({
   for (const artifact of artifacts) {
     const assetName = getAssetName(artifact.path)
       .trim()
-      .replace(/[ ()[\]{}]/g, '.')
-      .replace(/\.\./g, '.')
+      // Replace spaces, parentheses, brackets, braces, and common unicode symbols with dots
+      .replace(/[ ()[\]{}→←↑↓⟵⟶⟷⇄⇅⇆⇇⇈⇉⇊⇋⇌⇍⇎⇏]/g, '.')
+      // Replace multiple consecutive dots with single dot
+      .replace(/\.+/g, '.')
+      // Normalize unicode to decomposed form
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
+      // Remove diacritical marks
+      .replace(/[\u0300-\u036f]/g, '')
+      // Remove leading/trailing dots
+      .replace(/^\.+|\.+$/g, '');
     const downloadUrl = downloadUrls.get(assetName);
     if (downloadUrl) {
       filteredAssets.push({
